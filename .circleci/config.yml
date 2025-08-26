@@ -16,6 +16,12 @@ jobs:
     executor: python-selenium-grid
     steps:
       - checkout
+            # Install Java, required for allure-commandline
+      - run:
+          name: Install Java (Required for Allure)
+          command: |
+            sudo apt-get update
+            sudo apt-get install default-jre
       - run:
           name: Install dependencies
           command: |
