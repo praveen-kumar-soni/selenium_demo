@@ -1,0 +1,29 @@
+version: 2.1
+
+executors:
+  python-selenium-grid:
+    docker:
+      - image: cimg/python:3.11
+      - image: selenium/standalone-chrome:latest
+        name: selenium-hub
+        environment:
+          SE_NODE_MAX_SESSIONS: 1
+          SE_NODE_SESSION_TIMEOUT: 300
+          SE_START_XVFB: true
+
+jobs:
+  test:
+    executor: python-selenium-grid
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: pip install selenium
+      - run:
+          name: Run Selenium Grid test
+          command: SELENIUM_GRID_URL="http://selenium-hub:4444/wd/hub" python test_grid_demo.py
+
+workflows:
+  test-workflow:
+    jobs:
+      - test
