@@ -18,10 +18,21 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: pip install selenium
+          command: |
+            pip install selenium pytest allure-pytest
+            wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
+            tar -xzf allure-2.27.0.tgz
+            sudo mv allure-2.27.0 /opt/allure
+            sudo ln -s /opt/allure/bin/allure /usr/bin/allure
       - run:
-          name: Run Selenium Grid test
-          command: SELENIUM_GRID_URL="http://selenium-hub:4444/wd/hub" python test_grid_demo.py
+          name: Run Selenium Grid test with Allure
+          command: pytest test_grid_demo.py --alluredir=allure-results
+      - run:
+          name: Generate Allure Report
+          command: allure generate allure-results --clean -o allure-report
+      - store_artifacts:
+          path: allure-report
+          destination: allure-report
 
 workflows:
   test-workflow:
