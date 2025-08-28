@@ -3,16 +3,13 @@ version: 2.1
 executors:
   python-selenium-grid:
     docker:
-      # Primary container for Python tests
       - image: cimg/python:3.11
         environment:
           PIP_CACHE_DIR: ~/.cache/pip
-      # Selenium Hub (latest)
       - image: selenium/hub:latest
         name: selenium-hub
         environment:
           GRID_MAX_SESSION: 5
-      # Chrome Node (latest)
       - image: selenium/node-chrome:latest
         environment:
           SE_EVENT_BUS_HOST: selenium-hub
@@ -20,7 +17,6 @@ executors:
           SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
           SE_NODE_MAX_SESSIONS: 2
           SE_NODE_PORT: 5555
-      # Firefox Node (latest)
       - image: selenium/node-firefox:latest
         environment:
           SE_EVENT_BUS_HOST: selenium-hub
@@ -46,3 +42,9 @@ jobs:
           command: |
             . venv/bin/activate
             pytest test_google.py --maxfail=1 --disable-warnings
+
+workflows:
+  version: 2
+  test_workflow:
+    jobs:
+      - test
