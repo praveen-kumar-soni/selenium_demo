@@ -3,59 +3,46 @@ version: 2.1
 executors:
   python-selenium-grid:
     docker:
-      # Primary container for your Python test code
+      # Primary container for Python tests
       - image: cimg/python:3.11
         environment:
-          # Optional: increase pip cache, etc.
           PIP_CACHE_DIR: ~/.cache/pip
-      # Selenium Hub
+      # Selenium Hub (latest)
       - image: selenium/hub:latest
         name: selenium-hub
         environment:
-          GRID_MAX_SESSION: 3
-      # Chrome Node
+          GRID_MAX_SESSION: 5
+      # Chrome Node (latest)
       - image: selenium/node-chrome:latest
         environment:
           SE_EVENT_BUS_HOST: selenium-hub
           SE_EVENT_BUS_PUBLISH_PORT: 4442
           SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-      # Firefox Node
+          SE_NODE_MAX_SESSIONS: 2
+          SE_NODE_PORT: 5555
+      # Firefox Node (latest)
       - image: selenium/node-firefox:latest
         environment:
           SE_EVENT_BUS_HOST: selenium-hub
           SE_EVENT_BUS_PUBLISH_PORT: 4442
           SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 2
+          SE_NODE_PORT: 5556
 
 jobs:
   test:
     executor: python-selenium-grid
     steps:
       - checkout
-            # Install Java, required for allure-commandline
-      - run:
-          name: Install Java (Required for Allure)
-          command: |
-            sudo apt-get update
-            sudo apt-get install default-jre
       - run:
           name: Install dependencies
           command: |
-            pip install selenium pytest allure-pytest pytest-xdist
-            wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
-            tar -xzf allure-2.27.0.tgz
-            sudo mv allure-2.27.0 /opt/allure
-            sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+            python -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install selenium pytest
       - run:
-          name: Run Selenium Grid test with Allure
-          command: pytest test_grid_demo.py --alluredir=allure-results
-      - run:
-          name: Generate Allure Report
-          command: allure generate allure-results --clean -o allure-report
-      - store_artifacts:
-          path: allure-report
-          destination: allure-report
-
-workflows:
-  test-workflow:
-    jobs:
-      - test
+          name: Run Selenium tests
+          command: |
+            . venv/bin/activate
+            pytest test_google.py --maxfail=1 --disable-warnings
