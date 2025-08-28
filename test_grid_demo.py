@@ -3,20 +3,38 @@ import pytest
 import allure
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 SELENIUM_GRID_URL = os.getenv("SELENIUM_GRID_URL", "http://selenium-hub:4444/wd/hub")
+BROWSERS = ["chrome", "firefox"]
 
-@pytest.fixture(params=["chrome", "firefox"])
+@pytest.fixture(params=BROWSERS)
 def driver(request):
     browser = request.param
+
     if browser == "chrome":
-        options = webdriver.ChromeOptions()
-        driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
+        options = ChromeOptions()
+        options.add_argument("--headless")  # Optional: run headless
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Remote(
+            command_executor=SELENIUM_GRID_URL,
+            options=options
+        )
+
     elif browser == "firefox":
-        options = webdriver.FirefoxOptions()
-        driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
+        options = FirefoxOptions()
+        options.add_argument("--headless")  # Optional: run headless
+        driver = webdriver.Remote(
+            command_executor=SELENIUM_GRID_URL,
+            options=options
+        )
+
     else:
         raise ValueError(f"Unsupported browser: {browser}")
+
+    driver.implicitly_wait(5)
     yield driver
     driver.quit()
 

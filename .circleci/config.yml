@@ -9,18 +9,18 @@ executors:
           # Optional: increase pip cache, etc.
           PIP_CACHE_DIR: ~/.cache/pip
       # Selenium Hub
-      - image: selenium/hub:4.13.0-20230807
+      - image: selenium/hub:latest
         name: selenium-hub
         environment:
           GRID_MAX_SESSION: 3
       # Chrome Node
-      - image: selenium/node-chrome:4.13.0-20230807
+      - image: selenium/node-chrome:latest
         environment:
           SE_EVENT_BUS_HOST: selenium-hub
           SE_EVENT_BUS_PUBLISH_PORT: 4442
           SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
       # Firefox Node
-      - image: selenium/node-firefox:4.13.0-20230807
+      - image: selenium/node-firefox:latest
         environment:
           SE_EVENT_BUS_HOST: selenium-hub
           SE_EVENT_BUS_PUBLISH_PORT: 4442
