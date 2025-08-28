@@ -3,14 +3,28 @@ version: 2.1
 executors:
   python-selenium-grid:
     docker:
+      # Primary container for your Python test code
       - image: cimg/python:3.11
-      - image: selenium/standalone-chrome:latest
-      - image: selenium/standalone-firefox:latest
+        environment:
+          # Optional: increase pip cache, etc.
+          PIP_CACHE_DIR: ~/.cache/pip
+      # Selenium Hub
+      - image: selenium/hub:4.13.0-20230807
         name: selenium-hub
         environment:
-          SE_NODE_MAX_SESSIONS: 3
-          SE_NODE_SESSION_TIMEOUT: 300
-          SE_START_XVFB: true
+          GRID_MAX_SESSION: 3
+      # Chrome Node
+      - image: selenium/node-chrome:4.13.0-20230807
+        environment:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      # Firefox Node
+      - image: selenium/node-firefox:4.13.0-20230807
+        environment:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
 
 jobs:
   test:
