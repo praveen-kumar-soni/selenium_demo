@@ -19,22 +19,19 @@ def driver(request):
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        driver = webdriver.Remote(
-            command_executor=SELENIUM_GRID_URL,
-            options=options
-        )
+        driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
 
     elif browser == "firefox":
         options = FirefoxOptions()
         options.add_argument("--headless")
-        driver = webdriver.Remote(
-            command_executor=SELENIUM_GRID_URL,
-            options=options
-        )
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
+
     else:
         raise ValueError(f"Unsupported browser: {browser}")
 
-    driver.implicitly_wait(5)
+    driver.implicitly_wait(10)
     yield driver
     driver.quit()
 
