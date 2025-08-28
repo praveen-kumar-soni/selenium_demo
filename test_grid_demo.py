@@ -31,7 +31,7 @@ def driver(request):
     else:
         raise ValueError(f"Unsupported browser: {browser}")
 
-    driver.implicitly_wait(10)
+    driver.implicitly_wait(30)
     yield driver
     driver.quit()
 
