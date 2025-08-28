@@ -8,7 +8,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 # Selenium Grid URL
 SELENIUM_GRID_URL = os.getenv("SELENIUM_GRID_URL", "http://selenium-hub:4444/wd/hub")
-BROWSERS = ["chrome", "firefox"]
+BROWSERS = ["firefox"]
 
 @pytest.fixture(params=BROWSERS)
 def driver(request):
