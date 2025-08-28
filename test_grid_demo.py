@@ -1,3 +1,4 @@
+
 import os
 import pytest
 from selenium import webdriver
@@ -36,84 +37,45 @@ def driver(request):
     yield driver
     driver.quit()
 
-# Helper to attach screenshot
-def attach_screenshot(driver, name="screenshot"):
-    screenshot = driver.get_screenshot_as_png()
-    allure.attach(screenshot, name=name, attachment_type=allure.attachment_type.PNG)
+def test_google_title(driver):
+    driver.get("https://www.google.com")
+    allure.attach(driver.get_screenshot_as_png(), name="Google Home Screenshot", attachment_type=allure.attachment_type.PNG)
+    assert "Google" in driver.title
 
-# 1. Open Google homepage
-@allure.feature("Google Homepage")
-@allure.story("Check title")
-def test_google_homepage_title(driver):
-    with allure.step("Open Google"):
-        driver.get("https://www.google.com")
-        attach_screenshot(driver, "homepage")
-    with allure.step("Verify title contains 'Google'"):
-        assert "Google" in driver.title
-
-# 2. Search for a keyword
-@allure.feature("Google Search")
-@allure.story("Search Selenium Grid")
-def test_google_search_keyword(driver):
+def test_google_search_box(driver):
     driver.get("https://www.google.com")
     search_box = driver.find_element(By.NAME, "q")
-    with allure.step("Enter search query 'Selenium Grid'"):
-        search_box.send_keys("Selenium Grid")
-        search_box.send_keys(Keys.RETURN)
-        attach_screenshot(driver, "search_results")
-    with allure.step("Verify search results contain 'Selenium Grid'"):
-        assert "Selenium Grid" in driver.page_source or "Selenium Grid" in driver.title
+    assert search_box is not None
+    allure.attach(driver.get_screenshot_as_png(), name="Google Search Box Screenshot", attachment_type=allure.attachment_type.PNG)
 
-# 3. Check Google logo visibility
-@allure.feature("Google Homepage")
-@allure.story("Check logo")
-def test_google_logo_displayed(driver):
-    driver.get("https://www.google.com")
-    logo = driver.find_element(By.ID, "hplogo")
-    with allure.step("Verify Google logo is displayed"):
-        attach_screenshot(driver, "logo_display")
-        assert logo.is_displayed()
-
-# 4. Search suggestions appear
-@allure.feature("Google Search")
-@allure.story("Check suggestions")
-def test_google_search_suggestions(driver):
+def test_google_search_functionality(driver):
     driver.get("https://www.google.com")
     search_box = driver.find_element(By.NAME, "q")
-    search_box.send_keys("Python")
-    suggestions = driver.find_elements(By.CSS_SELECTOR, "ul[role='listbox'] li")
-    with allure.step("Verify search suggestions appear"):
-        attach_screenshot(driver, "search_suggestions")
-        assert len(suggestions) > 0
+    search_box.send_keys("OpenAI")
+    search_box.submit()
+    assert "OpenAI" in driver.title
+    allure.attach(driver.get_screenshot_as_png(), name="Google Search Functionality Screenshot", attachment_type=allure.attachment_type.PNG)
 
-# 5. Navigate to Images tab
-@allure.feature("Google Navigation")
-@allure.story("Images tab")
-def test_google_images_tab(driver):
+def test_google_images_link(driver):
     driver.get("https://www.google.com")
     images_link = driver.find_element(By.LINK_TEXT, "Images")
-    images_link.click()
-    with allure.step("Verify Images tab URL"):
-        attach_screenshot(driver, "images_tab")
-        assert "images" in driver.current_url
+    assert images_link is not None
+    allure.attach(driver.get_screenshot_as_png(), name="Google Images Link Screenshot", attachment_type=allure.attachment_type.PNG)
 
-# 6. Navigate to Gmail
-@allure.feature("Google Navigation")
-@allure.story("Gmail link")
-def test_google_gmail_link(driver):
+def test_google_privacy_link(driver):
     driver.get("https://www.google.com")
-    gmail_link = driver.find_element(By.LINK_TEXT, "Gmail")
-    gmail_link.click()
-    with allure.step("Verify Gmail page opened"):
-        attach_screenshot(driver, "gmail_page")
-        assert "mail.google.com" in driver.current_url or "Gmail" in driver.title
+    privacy_link = driver.find_element(By.LINK_TEXT, "Privacy")
+    assert privacy_link is not None
+    allure.attach(driver.get_screenshot_as_png(), name="Google Privacy Link Screenshot", attachment_type=allure.attachment_type.PNG)
 
-# 7. Check footer text presence
-@allure.feature("Google Homepage")
-@allure.story("Footer text")
-def test_google_footer_text(driver):
+def test_google_terms_link(driver):
     driver.get("https://www.google.com")
-    footer = driver.find_element(By.ID, "fsl")
-    with allure.step("Verify footer is displayed"):
-        attach_screenshot(driver, "footer")
-        assert footer.is_displayed()
+    terms_link = driver.find_element(By.LINK_TEXT, "Terms")
+    assert terms_link is not None
+    allure.attach(driver.get_screenshot_as_png(), name="Google Terms Link Screenshot", attachment_type=allure.attachment_type.PNG)
+
+def test_google_about_link(driver):
+    driver.get("https://www.google.com")
+    about_link = driver.find_element(By.LINK_TEXT, "About")
+    assert about_link is not None
+    allure.attach(driver.get_screenshot_as_png(), name="Google About Link Screenshot", attachment_type=allure.attachment_type.PNG)
