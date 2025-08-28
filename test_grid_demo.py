@@ -1,6 +1,7 @@
 import os
 import pytest
 from selenium import webdriver
+import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options as ChromeOptions
