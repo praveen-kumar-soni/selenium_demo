@@ -7,7 +7,7 @@ executors:
       - image: selenium/standalone-chrome:latest
         name: selenium-hub
         environment:
-          SE_NODE_MAX_SESSIONS: 1
+          SE_NODE_MAX_SESSIONS: 3
           SE_NODE_SESSION_TIMEOUT: 300
           SE_START_XVFB: true
 
@@ -25,14 +25,14 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            pip install selenium pytest allure-pytest
+            pip install selenium pytest allure-pytest pytest-xdist
             wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
             tar -xzf allure-2.27.0.tgz
             sudo mv allure-2.27.0 /opt/allure
             sudo ln -s /opt/allure/bin/allure /usr/bin/allure
       - run:
           name: Run Selenium Grid test with Allure
-          command: pytest test_grid_demo.py --alluredir=allure-results
+          command: pytest -n 3 test_grid_demo.py --alluredir=allure-results
       - run:
           name: Generate Allure Report
           command: allure generate allure-results --clean -o allure-report
