@@ -55,8 +55,9 @@ jobs:
             sudo ln -s /opt/allure/bin/allure /usr/bin/allure
             
       # Install both browsers
-      - browser-tools/install-browser-tools:
-          browsers: "chrome firefox"
+            # Install browsers and drivers
+      - browser-tools/install-chrome
+      - browser-tools/install-firefox
       - browser-tools/install-chromedriver
       - browser-tools/install-geckodriver
 
