@@ -26,7 +26,7 @@ jobs:
             sudo ln -s /opt/allure/bin/allure /usr/bin/allure
       - run:
           name: Run Selenium Grid test with Allure
-          command: pytest -v -n 2 test_grid_demo.py --alluredir=allure-results
+          command: pytest -v -n 4 test_grid_demo.py --alluredir=allure-results
       - run:
           when: always
           name: Generate Allure Report
