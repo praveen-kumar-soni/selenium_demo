@@ -7,8 +7,10 @@ jobs:
   test:
     docker:
       - image: cimg/python:3.11
+      - image: cimg/node:20.4.0-browsers
     steps:
       - checkout
+      - browser-tools/install_browser_tools
       - run:
           name: Install Java (Required for Allure)
           command: |
@@ -22,8 +24,6 @@ jobs:
             tar -xzf allure-2.27.0.tgz
             sudo mv allure-2.27.0 /opt/allure
             sudo ln -s /opt/allure/bin/allure /usr/bin/allure
-      - browser-tools/install-chrome
-      - browser-tools/install-firefox
       - run:
           name: Run Selenium Grid test with Allure
           command: pytest -v -n 2 test_grid_demo.py --alluredir=allure-results
