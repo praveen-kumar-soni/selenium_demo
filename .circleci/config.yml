@@ -1,35 +1,42 @@
 version: 2.1
 
-executors:
-  python-selenium-grid:
-    docker:
-      - image: cimg/python:3.11
-        environment:
-          PIP_CACHE_DIR: ~/.cache/pip
-      - image: selenium/hub:latest
-        name: selenium-hub
-        environment:
-          GRID_MAX_SESSION: 5
-#      - image: selenium/node-chrome:latest
+#executors:
+#  python-selenium-grid:
+#    docker:
+#      - image: cimg/python:3.11
+#        environment:
+#          PIP_CACHE_DIR: ~/.cache/pip
+#      - image: selenium/hub:latest
+#        name: selenium-hub
+#        environment:
+#          GRID_MAX_SESSION: 5
+##      - image: selenium/node-chrome:latest
+##        environment:
+##          SE_EVENT_BUS_HOST: selenium-hub
+##          SE_EVENT_BUS_PUBLISH_PORT: 4442
+##          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+##          SE_NODE_MAX_SESSIONS: 2
+##          SE_NODE_PORT: 5555
+#      - image: selenium/node-firefox:latest
 #        environment:
 #          SE_EVENT_BUS_HOST: selenium-hub
 #          SE_EVENT_BUS_PUBLISH_PORT: 4442
 #          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
 #          SE_NODE_MAX_SESSIONS: 2
-#          SE_NODE_PORT: 5555
-      - image: selenium/node-firefox:latest
-        environment:
-          SE_EVENT_BUS_HOST: selenium-hub
-          SE_EVENT_BUS_PUBLISH_PORT: 4442
-          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
-          SE_NODE_MAX_SESSIONS: 2
-          SE_NODE_PORT: 5556
-          START_XVFB: false     # disables Xvfb
-          START_VNC: false
+#          SE_NODE_PORT: 5556
+#          START_XVFB: false     # disables Xvfb
+#          START_VNC: false
+
+orbs:
+  browser-tools: circleci/browser-tools@2.3.1
+
 
 jobs:
   test:
-    executor: python-selenium-grid
+    docker:
+      - image: cimg/python:3.11
+
+
     steps:
       - checkout
             # Install Java, required for allure-commandline
@@ -46,13 +53,21 @@ jobs:
             tar -xzf allure-2.27.0.tgz
             sudo mv allure-2.27.0 /opt/allure
             sudo ln -s /opt/allure/bin/allure /usr/bin/allure
+            
+      # Install both browsers
+      - browser-tools/install-browser-tools:
+          browsers: "chrome firefox"
+      - browser-tools/install-chromedriver
+      - browser-tools/install-geckodriver
+
       - run:
           name: Run Selenium Grid test with Allure
-          command: pytest test_grid_demo.py --alluredir=allure-results
+          command: pytest -v -n 2 test_grid_demo.py --alluredir=allure-results
       - run:
           when: always
           name: Generate Allure Report
           command: allure generate allure-results --clean -o allure-report
+
       - store_artifacts:
           when: always
           path: allure-report
