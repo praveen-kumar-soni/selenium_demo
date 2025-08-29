@@ -1,5 +1,3 @@
-version: 2.1
-
 orbs:
   browser-tools: circleci/browser-tools@2.3.1
 
@@ -22,7 +20,7 @@ jobs:
             tar -xzf allure-2.27.0.tgz
             sudo mv allure-2.27.0 /opt/allure
             sudo ln -s /opt/allure/bin/allure /usr/bin/allure
-      - browser-tools/install-browser-tools
+      - browser-tools/install-browser
       - run:
           name: Run Selenium Grid test with Allure
           command: pytest -v -n 2 test_grid_demo.py --alluredir=allure-results
