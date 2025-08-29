@@ -52,7 +52,9 @@ def test_google_search_functionality(driver):
     driver.get("https://www.google.com")
     search_box = driver.find_element(By.NAME, "q")
     search_box.send_keys("OpenAI")
-    search_box.submit()
+    btn_submit = driver.find_element(By.NAME, "btnK")
+    # execute script to avoid "Element is not clickable at point" error in headless
+    driver.execute_script("arguments[0].click();", btn_submit)
     assert "OpenAI" in driver.title
     allure.attach(driver.get_screenshot_as_png(), name="Google Search Functionality Screenshot", attachment_type=allure.attachment_type.PNG)
 
