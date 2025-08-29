@@ -9,7 +9,7 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 # Selenium Grid URL
-BROWSERS = ["firefox"]
+BROWSERS = ["firefox", "chrome"]
 
 @pytest.fixture(params=BROWSERS)
 def driver(request):
