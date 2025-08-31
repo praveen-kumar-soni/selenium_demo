@@ -9,6 +9,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
 
 # Selenium Grid URL
 SELENIUM_GRID_URL = os.getenv("SELENIUM_GRID_URL", "http://selenium-hub:4444/wd/hub")
@@ -57,7 +59,8 @@ def test_google_search_functionality(driver):
     btn_submit = driver.find_element(By.NAME, "btnK")
     # execute script to avoid "Element is not clickable at point" error in headless
     driver.execute_script("arguments[0].click();", btn_submit)
-    time.sleep(10)
+    wait = WebDriverWait(driver, 10)
+    wait.until(expected_conditions.title_contains("OpenAI"))
     val = "OpenAI" in driver.title
     allure.attach(driver.get_screenshot_as_png(), name="Google Search Functionality Screenshot", attachment_type=allure.attachment_type.PNG)
     assert val is True
