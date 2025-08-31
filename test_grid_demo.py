@@ -1,5 +1,7 @@
 
 import os
+import time
+
 import pytest
 from selenium import webdriver
 import allure
@@ -10,7 +12,7 @@ from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 # Selenium Grid URL
 SELENIUM_GRID_URL = os.getenv("SELENIUM_GRID_URL", "http://selenium-hub:4444/wd/hub")
-BROWSERS = ["firefox"]
+BROWSERS = ["firefox", "chrome"]
 
 @pytest.fixture(params=BROWSERS)
 def driver(request):
@@ -55,6 +57,7 @@ def test_google_search_functionality(driver):
     btn_submit = driver.find_element(By.NAME, "btnK")
     # execute script to avoid "Element is not clickable at point" error in headless
     driver.execute_script("arguments[0].click();", btn_submit)
+    time.sleep(10)
     val = "OpenAI" in driver.title
     allure.attach(driver.get_screenshot_as_png(), name="Google Search Functionality Screenshot", attachment_type=allure.attachment_type.PNG)
     assert val is True
