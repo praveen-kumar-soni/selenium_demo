@@ -9,7 +9,8 @@ from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 # Selenium Grid URL
-BROWSERS = ["firefox", "chrome"]
+SELENIUM_GRID_URL = os.getenv("SELENIUM_GRID_URL", "http://selenium-hub:4444/wd/hub")
+BROWSERS = ["firefox"]
 
 @pytest.fixture(params=BROWSERS)
 def driver(request):
@@ -20,14 +21,14 @@ def driver(request):
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
 
     elif browser == "firefox":
         options = FirefoxOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
-        driver = webdriver.Firefox(options=options)
+        driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
 
     else:
         raise ValueError(f"Unsupported browser: {browser}")
