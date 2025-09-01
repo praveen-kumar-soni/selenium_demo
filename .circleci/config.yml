@@ -4,33 +4,64 @@ executors:
   python-selenium-grid:
     docker:
       - image: cimg/python:3.11
-      - image: selenium/standalone-chrome:latest
+        environment:
+          PIP_CACHE_DIR: ~/.cache/pip
+      - image: selenium/hub:latest
         name: selenium-hub
         environment:
-          SE_NODE_MAX_SESSIONS: 1
-          SE_NODE_SESSION_TIMEOUT: 300
-          SE_START_XVFB: true
+          GRID_MAX_SESSION: 5
+      - image: selenium/node-chrome:latest
+        environment:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 2
+          SE_NODE_PORT: 5555
+      - image: selenium/node-firefox:latest
+        environment:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 2
+          SE_NODE_PORT: 5556
+          START_XVFB: false     # disables Xvfb
+          START_VNC: false
+      - image: selenium/node-edge:latest
+        environment:
+          SE_EVENT_BUS_HOST: selenium-hub
+          SE_EVENT_BUS_PUBLISH_PORT: 4442
+          SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+          SE_NODE_MAX_SESSIONS: 2
+          SE_NODE_PORT: 5557
 
 jobs:
   test:
     executor: python-selenium-grid
     steps:
       - checkout
+            # Install Java, required for allure-commandline
+      - run:
+          name: Install Java (Required for Allure)
+          command: |
+            sudo apt-get update
+            sudo apt-get install default-jre
       - run:
           name: Install dependencies
           command: |
-            pip install selenium pytest allure-pytest
+            pip install selenium pytest allure-pytest pytest-xdist
             wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
             tar -xzf allure-2.27.0.tgz
             sudo mv allure-2.27.0 /opt/allure
             sudo ln -s /opt/allure/bin/allure /usr/bin/allure
       - run:
           name: Run Selenium Grid test with Allure
-          command: pytest test_grid_demo.py --alluredir=allure-results
+          command: pytest -n 4 test_grid_demo.py --alluredir=allure-results
       - run:
+          when: always
           name: Generate Allure Report
           command: allure generate allure-results --clean -o allure-report
       - store_artifacts:
+          when: always
           path: allure-report
           destination: allure-report
 
