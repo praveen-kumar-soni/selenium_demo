@@ -33,7 +33,8 @@ def driver(request):
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
         driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
-    else if browser == "edge":
+
+    elif browser == "edge":
         from selenium.webdriver import Edge
         from selenium.webdriver.edge.options import Options as EdgeOptions
         options = EdgeOptions()
