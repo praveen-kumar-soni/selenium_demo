@@ -14,7 +14,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 # Selenium Grid URL
 SELENIUM_GRID_URL = os.getenv("SELENIUM_GRID_URL", "http://selenium-hub:4444/wd/hub")
-BROWSERS = ["firefox", "chrome"]
+BROWSERS = ["firefox", "chrome", "edge"]
 
 @pytest.fixture(params=BROWSERS)
 def driver(request):
@@ -29,6 +29,14 @@ def driver(request):
 
     elif browser == "firefox":
         options = FirefoxOptions()
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Remote(command_executor=SELENIUM_GRID_URL, options=options)
+    else if browser == "edge":
+        from selenium.webdriver import Edge
+        from selenium.webdriver.edge.options import Options as EdgeOptions
+        options = EdgeOptions()
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
         options.add_argument("--disable-dev-shm-usage")
